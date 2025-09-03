@@ -5,7 +5,7 @@ services:
     build: .
     container_name: tv2tg-bot
     ports:
-      - "9235:9235"                # 外部 -> 容器端口
+      - "80:80"                # 外部 -> 容器端口
     env_file:
       - .env                       # 加载你的 TELEGRAM_KEY 等配置
     volumes:
