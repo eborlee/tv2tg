@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  webhook_bot:
+    build: .
+    container_name: tv2tg-bot
+    ports:
+      - "8080:8080"                # 外部 -> 容器端口
+    env_file:
+      - .env                       # 加载你的 TELEGRAM_KEY 等配置
+    volumes:
+      - ./logs:/app/logs          # 将 logs 文件夹挂载到容器中
+    restart: unless-stopped       # 容器异常退出会自动重启
