@@ -26,6 +26,7 @@ def parse_tv_payload(payload: str) -> str:
                 desc = "🟢 超卖"
             else:
                 desc = "🟡 中性波动"
+            desc = desc + raw_desc
         else:
             desc = raw_desc or "⚠️ 无描述"
 
