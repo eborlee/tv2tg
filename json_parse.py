@@ -21,9 +21,9 @@ def parse_tv_payload(payload: str) -> str:
             if value is None:
                 desc = "⚠️ 指标异常"
             elif value >= 40:
-                desc = "🟢 超买"
+                desc = "🔴 超买"
             elif value <= -40:
-                desc = "🔴 超卖"
+                desc = "🟢 超卖"
             else:
                 desc = "🟡 中性波动"
         else:

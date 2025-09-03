@@ -8,6 +8,19 @@ import os
 from tv_interval_utils import normalize_interval
 from json_parse import parse_tv_payload
 
+import logging
+from logging.handlers import RotatingFileHandler
+
+# 初始化日志（建议放在 app.py 顶部）
+log_file = "webhook.log"
+handler = RotatingFileHandler(log_file, maxBytes=100_000, backupCount=5)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[handler]
+)
+
+
 load_dotenv()
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
