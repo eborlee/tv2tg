@@ -25,13 +25,15 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID_STR = os.getenv("TELEGRAM_CHAT_ID")
-TOPIC_ID_STR = os.getenv("TELEGRAM_TOPIC_ID")
+TOPIC_ID_SHORT_STR = os.getenv("TELEGRAM_TOPIC_ID_SHORT")
+TOPIC_ID_LONG_STR = os.getenv("TELEGRAM_TOPIC_ID_LONG")
 
-if not BOT_TOKEN or not CHAT_ID_STR or not TOPIC_ID_STR:
+if not BOT_TOKEN or not CHAT_ID_STR or not TOPIC_ID_SHORT_STR or not TOPIC_ID_LONG_STR:
     raise ValueError("Missing env variables")
 
 CHAT_ID = int(CHAT_ID_STR)
-TOPIC_ID = int(TOPIC_ID_STR)
+TOPIC_ID_SHORT = int(TOPIC_ID_SHORT_STR)
+TOPIC_ID_LONG = int(TOPIC_ID_LONG_STR)
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
 app = FastAPI()
@@ -40,11 +42,17 @@ msg_queue = asyncio.Queue()
 # Telegram 消息发送器（节流 + 异步队列）
 async def telegram_worker():
     while True:
-        msg = await msg_queue.get()
+        res = await msg_queue.get()
+        msg = res['msg']
+        topic = res["topic"]
+        if topic == "LONG":
+            topic_id = TOPIC_ID_LONG
+        else:
+            topic_id = TOPIC_ID_SHORT
         try:
             payload = {
                 "chat_id": CHAT_ID,
-                "message_thread_id": TOPIC_ID,
+                "message_thread_id": topic_id,
                 "text": msg
             }
             async with httpx.AsyncClient() as client:

@@ -7,7 +7,7 @@ def safe_float(x):
     except (TypeError, ValueError):
         return None
 
-def parse_tv_payload(payload: str) -> str:
+def parse_tv_payload(payload: str) -> dict:
     try:
         data = json.loads(payload)
         symbol = data.get("symbol", "UNKNOWN")
@@ -26,15 +26,23 @@ def parse_tv_payload(payload: str) -> str:
                 desc = "🟢 超卖"
             else:
                 desc = "🟡 中性波动"
-            desc = desc + raw_desc
+            desc = desc + "\n" + raw_desc
         else:
             desc = raw_desc or "⚠️ 无描述"
 
-        msg = f"{symbol} | {normalize_interval(interval)} {desc}"
+        norm_interval = normalize_interval(interval)
+        msg = {"msg": f"{symbol} | {norm_interval} {desc}"}
+
+        if  norm_interval in ['4h','1d','1w','1mo']:
+            msg['topic'] = "LONG"
+        else:
+            msg['topic'] = "SHORT"
+
         if value is not None:
-            msg += f"\n指标值: {value:.1f}"
+            msg['msg'] += f"\n指标值: {value:.1f}"
 
         return msg
 
     except Exception as e:
-        return f"⚠️ JSON解析失败: {e}"
+        return {"topic":"LONG",
+                "msg":f"⚠️ JSON解析失败: {e}"}
